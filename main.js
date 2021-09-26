@@ -3,11 +3,35 @@ const {app, BrowserWindow,dialog,globalShortcut} = require('electron')
 const path = require('path')
 const { autoUpdater } = require('electron-updater')
 
+// const {exec} =require('child_process')
+
+const childProcess = require('child_process')
+// 启动脚本的方法
+function runExec() {
+  let appPath = app.getAppPath()
+  console.log(appPath,'appPath')
+  appPath = appPath.replace('app.asar', '')
+  // 不受child_process默认的缓冲区大小的使用方法，没参数也要写上{}：workerProcess = exec(cmdStr, {})
+  workerProcess = childProcess.spawn('AutoHotkey.exe', { cwd: appPath })
+  // 打印正常的后台可执行程序输出
+  workerProcess.stdout.on('data', function (data) {})
+
+  // 打印错误的后台可执行程序输出
+  workerProcess.stderr.on('data', function (data) {})
+
+  // 退出之后的输出
+  workerProcess.on('close', function (code) {})
+}
+
 let canQuit = false;
 
 var mainWindow = null;
 
 function createWindow () {
+  // exec('.\\AutoHotkey.exe');   //启动脚本
+
+  runExec()  //启动脚本
+
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
@@ -35,6 +59,7 @@ function createWindow () {
   });
 
   mainWindow.on('closed',()=>{
+    // exec('TASKKILL /IM AutoHotkey.exe'); // 终止脚本
     mainWindow = null
   })
 
@@ -60,6 +85,8 @@ app.whenReady().then(() => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
+
+  workerProcess.kill()  // 终止脚本
 })
 
 // In this file you can include the rest of your app's specific main process
@@ -140,5 +167,5 @@ app.on('ready', () => {
 })
 
 app.on('will-quit', ()=>{
-  globalShortcut.unregisterAll()
+  globalShortcut.unregisterAll() //注销所以快捷键
 })

@@ -11,6 +11,12 @@
     "appId": "com.xxx.app",
     "copyright": "LEON",
     "productName": "myApp",
+    "extraResources":[
+      {
+        "from":"./AutoHotkey.exe",
+        "to":"./AutoHotkey.exe"
+      }
+    ],
     "mac": {
       "target": [
         "dmg",
