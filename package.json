@@ -11,10 +11,18 @@
     "appId": "com.xxx.app",
     "copyright": "LEON",
     "productName": "myApp",
-    "extraResources":[
+    "extraResources": [
       {
-        "from":"./AutoHotkey.exe",
-        "to":"./AutoHotkey.exe"
+        "from": "./AutoHotkey.exe",
+        "to": "./AutoHotkey.exe"
+      },
+      {
+        "from": "./resources/jy.bat",
+        "to": "./jy.bat"
+      },
+      {
+        "from": "./resources/start.bat",
+        "to": "./start.bat"
       }
     ],
     "mac": {
@@ -51,6 +59,7 @@
     "electron-builder": "^22.11.7"
   },
   "dependencies": {
-    "electron-updater": "^4.3.9"
+    "electron-updater": "^4.3.9",
+    "sudo-prompt": "^9.2.1"
   }
 }

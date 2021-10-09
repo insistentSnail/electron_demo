@@ -5,12 +5,14 @@ const { autoUpdater } = require('electron-updater')
 
 // const {exec} =require('child_process')
 
+// 屏蔽快捷热键、切屏
 const childProcess = require('child_process')
+let appPath = app.getAppPath()
+console.log(appPath,'appPath')
+appPath = appPath.replace('app.asar', '')
 // 启动脚本的方法
 function runExec() {
-  let appPath = app.getAppPath()
-  console.log(appPath,'appPath')
-  appPath = appPath.replace('app.asar', '')
+
   // 不受child_process默认的缓冲区大小的使用方法，没参数也要写上{}：workerProcess = exec(cmdStr, {})
   workerProcess = childProcess.spawn('AutoHotkey.exe', { cwd: appPath })
   // 打印正常的后台可执行程序输出
@@ -21,6 +23,48 @@ function runExec() {
 
   // 退出之后的输出
   workerProcess.on('close', function (code) {})
+
+
+  // jy = childProcess.spawn('jy.bat', { cwd: appPath })
+  // // 打印正常的后台可执行程序输出
+  // jy.stdout.on('data', function (data) {})
+
+  // // 打印错误的后台可执行程序输出
+  // jy.stderr.on('data', function (data) {})
+
+  // // 退出之后的输出
+  // jy.on('close', function (code) {})
+}
+
+// 屏蔽任务管理器脚本
+const sudo = require('sudo-prompt');
+function runExec2(){
+  console.log(111111)
+  const options = {
+    name: 'Electron',
+    // cwd: appPath+'\\resources'
+  };
+  sudo.exec('./resources/jy.bat', options,
+    function(error, stdout, stderr) {
+      if (error) throw error;
+      console.log('stdout: ' + stdout);
+    }
+  )
+}
+
+// 重启任务管理器脚本
+function runExec3(){
+  console.log(222222)
+  const options = {
+    name: 'Electron',
+    // cwd: appPath 
+  };
+  sudo.exec('./resources/start.bat', options,
+    function(error, stdout, stderr) {
+      if (error) throw error;
+      console.log('stdout: ' + stdout);
+    }
+  )
 }
 
 let canQuit = false;
@@ -28,6 +72,7 @@ let canQuit = false;
 var mainWindow = null;
 
 function createWindow () {
+  runExec2()
   // exec('.\\AutoHotkey.exe');   //启动脚本
 
   runExec()  //启动脚本
@@ -38,7 +83,7 @@ function createWindow () {
     height: 600,
     fullscreen: true,//全屏
     closable:false,//窗口是否可以关闭. 在 Linux上无效. 默认为 true
-    alwaysOnTop:true,//窗口是否总是显示在其他窗口之前. 在 Linux上无效. 默认为 false   可以切屏但是切不出去
+    alwaysOnTop:false,//窗口是否总是显示在其他窗口之前. 在 Linux上无效. 默认为 false   可以切屏但是切不出去
     autoHideMenuBar:true,//除非点击 Alt ，否则隐藏菜单栏.默认为 false 
     resizable:false,//是否可以改变窗口size，默认为 true 
     frame: false,//指定 false 来创建一个 Frameless Window. 默认为 true  去除顶部所有导航按钮
@@ -142,6 +187,7 @@ app.on('ready', () => {
 
   // 注册全局快捷键
   globalShortcut.register('CommandOrControl+Alt+K', () => {
+
     // 设置层级
     mainWindow.setAlwaysOnTop(false)
 
@@ -155,7 +201,11 @@ app.on('ready', () => {
       if(index.response==0){
         canQuit=true;
         // app.quit(); 
-        app.exit();
+            // 放在关闭之前调用就行
+        runExec3()
+        setTimeout(()=>{
+          app.exit();
+        },500)
       }
     })
   })
@@ -167,5 +217,5 @@ app.on('ready', () => {
 })
 
 app.on('will-quit', ()=>{
-  globalShortcut.unregisterAll() //注销所以快捷键
+  globalShortcut.unregisterAll() //注销所有快捷键
 })
