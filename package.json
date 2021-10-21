@@ -1,17 +1,24 @@
 {
   "name": "electron-quick-start",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder",
-    "build:ia": "electron-builder --ia32"
+    "build": "electron-builder --win --ia32"
   },
   "build": {
     "appId": "com.xxx.app",
     "copyright": "LEON",
-    "productName": "myApp",
+    "productName": "云端智慧考试云平台",
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "./build/favicon.ico",
+      "uninstallerIcon": "./build/favicon.ico",
+      "displayLanguageSelector": false,
+      "shortcutName": "云考试"
+    },
     "extraResources": [
       {
         "from": "./AutoHotkey.exe",
@@ -33,6 +40,7 @@
       ]
     },
     "win": {
+      "icon": "build/logo.png",
       "target": [
         "nsis",
         "zip"
@@ -61,6 +69,9 @@
   },
   "dependencies": {
     "electron-updater": "^4.3.9",
+    "ps-list": "^7.2.0",
+    "public-ip": "^4.0.3",
+    "getmac": "^5.20.0",
     "sudo-prompt": "^9.2.1"
   }
 }

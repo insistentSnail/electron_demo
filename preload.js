@@ -11,3 +11,23 @@ window.addEventListener('DOMContentLoaded', () => {
     replaceText(`${type}-version`, process.versions[type])
   }
 })
+
+const { contextBridge, ipcRenderer } = require('electron')
+
+/**
+ * 使用上下文隔离 增加renderer安全性 让renderer使用序列化好的API使用
+ * invoke 方法是异步的不会阻止其它方法
+ * 在业务层面考虑使用 invoke 或者是 send/on
+ */
+ contextBridge.exposeInMainWorld('fromManager', {
+  enableChangeTabLock: () => {
+    // 启用防切屏   
+    ipcRenderer.send('enableChangeTabLock')
+  },
+  // 禁用防切屏 允许切屏
+  disableChangeTabLock: () => {
+    ipcRenderer.send('disableChangeTabLock')
+  },
+  getIpAndMac: () => ipcRenderer.invoke('getIpMac'),
+  getPsList: () => ipcRenderer.send('getPsList')
+})
