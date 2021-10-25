@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow,dialog,globalShortcut} = require('electron')
+const {app, BrowserWindow,dialog,globalShortcut,ipcMain} = require('electron')
 const path = require('path')
 const { autoUpdater } = require('electron-updater')
 
@@ -72,7 +72,7 @@ let canQuit = false;
 var mainWindow = null;
 
 function createWindow () {
-  runExec2()
+  // runExec2()
   // exec('.\\AutoHotkey.exe');   //启动脚本
 
   runExec()  //启动脚本
@@ -88,13 +88,22 @@ function createWindow () {
     resizable:false,//是否可以改变窗口size，默认为 true 
     frame: false,//指定 false 来创建一个 Frameless Window. 默认为 true  去除顶部所有导航按钮
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      contextIsolation: false
     }
   })
 
   // and load the index.html of the app.
   // mainWindow.loadFile('index.html')
-  mainWindow.loadURL('https://yd.signup.yunduancn.com/#/login')
+//   mainWindow.loadURL('https://yd.signup.yunduancn.com/#/login')
+
+//   测试与打包地址之间的通信
+  mainWindow.loadURL(' http://localhost:9528/') 
+
+  // Open the DevTools.
+  mainWindow.webContents.openDevTools()
 
   // 禁止关闭应用
   mainWindow.on('close', (event) => {
@@ -202,7 +211,7 @@ app.on('ready', () => {
         canQuit=true;
         // app.quit(); 
             // 放在关闭之前调用就行
-        runExec3()
+        // runExec3()
         setTimeout(()=>{
           app.exit();
         },500)
@@ -218,4 +227,26 @@ app.on('ready', () => {
 
 app.on('will-quit', ()=>{
   globalShortcut.unregisterAll() //注销所有快捷键
+})
+
+ipcMain.on('send_message_load', (event, arg) => {
+    console.log(arg)
+    event.sender.send('asynchronous-message', 'electron传给web的数据')
+    dialog.showMessageBox({
+        type: 'info',
+        title: '提示', 
+        message: '你想要关闭这个应用吗?',
+        buttons: ['是','否']
+        }).then((index)=>{
+          console.log('you chose',index) 
+        if(index.response==0){
+          canQuit=true;
+          // app.quit(); 
+              // 放在关闭之前调用就行
+          // runExec3()
+          setTimeout(()=>{
+            app.exit();
+          },500)
+        }
+    })
 })
