@@ -4,6 +4,8 @@ const path = require('path')
 const { autoUpdater } = require('electron-updater')
 
 const gotTheLock = app.requestSingleInstanceLock()
+// const loginUrl = 'https://yd.signup.yunduancn.com/#/examLogin'
+const loginUrl = 'http://localhost:9528/#/examLogin'
 
 // 屏蔽快捷热键、切屏
 const childProcess = require('child_process')
@@ -104,9 +106,7 @@ function ipcEvent() {
               buttons: ['确定']
             })
             .then(returnValue => {
-              if (returnValue.response === 0) {
-                app.exit()
-              }
+              app.exit()
             })
         }
       }
@@ -171,10 +171,9 @@ function createWindow() {
   // and load the index.html of the app.
   // mainWindow.loadFile('index.html')
   app.commandLine.appendSwitch('--disable-http-cache') // 禁用缓存
-  //  mainWindow.loadURL('https://yd.signup.yunduancn.com/#/login')
 
   //   测试与打包地址之间的通信
-  mainWindow.loadURL(' http://localhost:9528/')
+  mainWindow.loadURL(loginUrl)
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
@@ -313,6 +312,11 @@ if (!gotTheLock) {
     globalShortcut.register('CommandOrControl+shift+I', () => {
       // event.preventDefault()
       // 屏蔽调用控制台
+    })
+    globalShortcut.register('Alt+R', () => {
+      // event.preventDefault()
+      // 强制刷新
+      mainWindow.webContents.reloadIgnoringCache()
     })
   })
 
