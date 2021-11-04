@@ -28,6 +28,9 @@ contextBridge.exposeInMainWorld('fromManager', {
   disableChangeTabLock: () => {
     ipcRenderer.send('disableChangeTabLock')
   },
-  getIpAndMac: () => ipcRenderer.invoke('getIpMac'), // 获取mac地址
+  getMac: async () => {
+    let val = await ipcRenderer.invoke('getMac')
+    return val
+  },
   getPsList: () => ipcRenderer.send('getPsList') // 检测进程
 })

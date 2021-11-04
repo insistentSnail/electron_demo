@@ -13,6 +13,40 @@ let appPath = app.getAppPath()
 console.log(appPath, 'appPath')
 appPath = appPath.replace('app.asar', '')
 
+const fs = require('fs')
+// 检测是否缺少文件
+function vaildFilesNull() {
+  fs.access(appPath + '/AutoHotkey.exe', err => {
+    if (err) {
+      return messageFile()
+    }
+    runExec() //启动脚本
+  })
+  fs.access('./resources/jy.bat', err => {
+    if (err) {
+      return messageFile()
+    }
+    disabledTask()
+  })
+  fs.access('./resources/start.bat', err => {
+    if (err) {
+      return messageFile()
+    }
+  })
+}
+function messageFile() {
+  dialog
+    .showMessageBox(mainWindow, {
+      type: 'error',
+      title: '启动失败',
+      message: '检测到系统文件有缺失，请重新安装本软件！',
+      buttons: ['确定']
+    })
+    .then(returnValue => {
+      app.exit()
+    })
+}
+
 // 启动脚本的方法
 function runExec() {
   // 不受child_process默认的缓冲区大小的使用方法，没参数也要写上{}：workerProcess = exec(cmdStr, {})
@@ -30,7 +64,6 @@ function runExec() {
 // 屏蔽任务管理器脚本
 const sudo = require('sudo-prompt')
 function disabledTask() {
-  console.log(111111)
   const options = {
     name: 'Electron'
     // cwd: appPath+'\\resources'
@@ -43,7 +76,6 @@ function disabledTask() {
 
 // 重启任务管理器脚本
 function enableTask() {
-  console.log(222222)
   const options = {
     name: 'Electron'
     // cwd: appPath
@@ -78,7 +110,7 @@ function ipcEvent() {
     }
   })
 
-  ipcMain.handle('getIpMac', () => {
+  ipcMain.handle('getMac', () => {
     // 获取电脑mac地址
     return getmac.default()
   })
@@ -142,11 +174,9 @@ let canQuit = false
 var mainWindow = null
 
 function createWindow() {
-  disabledTask()
-  // runExec2()
+  vaildFilesNull()
   // exec('.\\AutoHotkey.exe');   //启动脚本
 
-  runExec() //启动脚本
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
@@ -296,7 +326,6 @@ if (!gotTheLock) {
           buttons: ['是', '否']
         })
         .then(index => {
-          console.log('you chose', index)
           if (index.response == 0) {
             canQuit = true
             // app.quit();

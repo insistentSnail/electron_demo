@@ -65,13 +65,14 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^15.0.0",
-    "electron-builder": "^22.11.7"
+    "electron-builder": "^22.11.7",
+    "terser-webpack-plugin": "^5.2.4"
   },
   "dependencies": {
     "electron-updater": "^4.3.9",
+    "getmac": "^5.20.0",
     "ps-list": "^7.2.0",
     "public-ip": "^4.0.3",
-    "getmac": "^5.20.0",
     "sudo-prompt": "^9.2.1"
   }
 }
