@@ -57,7 +57,7 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^15.0.0",
-    "electron-builder": "^22.11.7"
+    "electron-builder": "^23.1.0"
   },
   "dependencies": {
     "electron-updater": "^4.3.9",
